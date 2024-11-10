@@ -7,7 +7,6 @@ from init import client
 from saju.inout import *
 
 
-
 load_dotenv()
 
 ASSISTANT_ID = "asst_M2Q6MUW39ydBnV8zjr6hj1I7"
@@ -31,9 +30,13 @@ schema = {
                 "type": "string",
                 "description": "생년월일 (YYYY-MM-DD 형식)",
             },
-            "birth_time_str": {
-                "type": "string",
-                "description": "태어난 시간 (0~23 사이의 숫자, HH 형식)",
+            "birth_hour": {
+                "type": "integer",
+                "description": "태어난 시간 (0~23 사이의 숫자)",
+            },
+            "birth_minute": {
+                "type": "integer",
+                "description": "태어난 분 (0~59 사이의 숫자)",
             },
             "gender": {
                 "type": "string",
@@ -42,11 +45,17 @@ schema = {
             },
             "is_lunar_str": {
                 "type": "string",
-                "enum": ["Y", "N"],
-                "description": "음력 생일 여부 ('Y' 또는 'N')",
+                "enum": ["양력", "음력"],
+                "description": "양력 생일 여부 ('양력' 또는 '음력')",
             },
         },
-        "required": ["birth_date_str", "birth_time_str", "gender", "is_lunar_str"],
+        "required": [
+            "birth_date_str",
+            "birth_hour",
+            "birth_minute",
+            "gender",
+            "is_lunar_str",
+        ],
     },
 }
 

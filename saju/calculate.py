@@ -1,6 +1,13 @@
-from datetime import datetime
+import os, sys
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from datetime import datetime, timedelta, timezone
 from korean_lunar_calendar import KoreanLunarCalendar
 from saju.data import *
+
+sixty_ganji = [heavenly_stems[i % 10] + earthly_branches[i % 12] for i in range(60)]
+# 한국 표준시 (UTC+9) 타임존 설정
+KST = timezone(timedelta(hours=9))
 
 
 def solar_to_lunar(year, month, day):
@@ -23,6 +30,9 @@ def solar_to_lunar(year, month, day):
     is_leap_month = calendar.isIntercalation
 
     return lunar_year, lunar_month, lunar_day, is_leap_month
+
+
+# print(solar_to_lunar(1989, 8, 7))
 
 
 def get_year_pillar(lunar_year):
@@ -76,7 +86,8 @@ def get_day_pillar(solar_date):
     # 일간지 계산은 복잡하며, 정확한 계산을 위해서는 천문 역법 데이터가 필요합니다.
     # 여기서는 예시로 통용되는 수식을 사용합니다.
     # 참고로, 서기 1900년 1월 31일은 병인일입니다.
-    base_date = datetime(1900, 1, 31)
+    base_date = datetime(1900, 1, 31, tzinfo=KST)  # 병인일을 기준으로 함
+    solar_date = solar_date.astimezone(KST)
     delta_days = (solar_date - base_date).days
     index = delta_days % 60
     day_pillar = sixty_ganji[index]
@@ -87,6 +98,7 @@ def get_time_pillar(day_stem, birth_hour, birth_minute):
     """
     일간의 천간과 태어난 시간 및 분을 기반으로 시주를 계산합니다.
     """
+    print(f"시간 : {birth_hour}:{birth_minute}")
     # 기준에 맞추어 23:30~01:30처럼 각 시간대의 시작과 끝을 반영
     if birth_minute >= 30:
         birth_hour = (birth_hour + 1) % 24  # 30분 이상일 경우 다음 시간대로

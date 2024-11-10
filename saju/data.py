@@ -24,7 +24,6 @@ earthly_branches = [
     "술(戌)",
     "해(亥)",
 ]
-sixty_ganji = [heavenly_stems[i % 10] + earthly_branches[i % 12] for i in range(60)]
 month_branches = [
     "인(寅)",
     "묘(卯)",

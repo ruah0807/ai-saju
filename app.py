@@ -39,6 +39,9 @@ birth_time_str = f"{birth_hour:02}:{birth_minute:02}"
 
 
 if st.button("사주팔자 세우기"):
+    print(
+        f"생년월일:{birth_date} / 시간:{birth_time_str} / 성별: {gender} / 양력or음력 : {is_lunar_str}"
+    )
     if not st.session_state.get("openai_api_key"):
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
@@ -49,7 +52,7 @@ if st.button("사주팔자 세우기"):
     with st.spinner("응답을 기다리는 중..."):
 
         # 사용자 입력 전송
-        prompt = f"생년월일: {birth_date_str}, 시간: {birth_time_str}, 성별: {gender}, 음력 여부: {is_lunar_str}"
+        prompt = f"생년월일: {birth_date_str}, 시간: {birth_hour}:{birth_minute}, 성별: {gender}, 음력 여부: {is_lunar_str}"
         response = client.beta.threads.messages.create(
             thread_id=st.session_state["thread_id"], role="user", content=prompt
         )
@@ -79,10 +82,10 @@ if st.button("사주팔자 세우기"):
             ```
             {{
                 "description" : (지정된 사주팔자 설명)
-                "시주": (한자와 한글)
-                "일주": (한자와 한글)
-                "월주": (한자와 한글)
-                "년주": (한자와 한글)
+                "time_pillar": (시주)
+                "day_pillar": (일주)
+                "month_pillar": (월주)
+                "year_pillar": (년주)
             }}
             ```
             
@@ -209,19 +212,19 @@ if st.button("사주팔자 세우기"):
             # 카드 형식으로 사주 구성 출력
             cols = st.columns(4)
             cols[0].markdown(
-                f'<div class="card card-siju"><div class="card-title">시주</div><div class="card-content">{saju_data["시주"]}</div></div>',
+                f'<div class="card card-siju"><div class="card-title">시주</div><div class="card-content">{saju_data["time_pillar"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[1].markdown(
-                f'<div class="card card-ilju"><div class="card-title">일주</div><div class="card-content">{saju_data["일주"]}</div></div>',
+                f'<div class="card card-ilju"><div class="card-title">일주</div><div class="card-content">{saju_data["day_pillar"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[2].markdown(
-                f'<div class="card card-wolju"><div class="card-title">월주</div><div class="card-content">{saju_data["월주"]}</div></div>',
+                f'<div class="card card-wolju"><div class="card-title">월주</div><div class="card-content">{saju_data["month_pillar"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[3].markdown(
-                f'<div class="card card-nyunju"><div class="card-title">년주</div><div class="card-content">{saju_data["년주"]}</div></div>',
+                f'<div class="card card-nyunju"><div class="card-title">년주</div><div class="card-content">{saju_data["year_pillar"]}</div></div>',
                 unsafe_allow_html=True,
             )
             print(f"사주팔자 결과:{msg}")
