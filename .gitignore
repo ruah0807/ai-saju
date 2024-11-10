@@ -1,2 +1,15 @@
+# 환경 변수 파일
 .env
-__pycache__
+
+# Streamlit secrets 파일
+.streamlit/secrets.toml
+
+# PyCharm 설정 파일 (선택 사항)
+.idea/
+
+# 캐시 파일
+__pycache__/
+*.pyc
+
+# 기타 개인 설정 파일
+.DS_Store
