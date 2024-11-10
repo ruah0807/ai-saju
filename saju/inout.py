@@ -17,8 +17,10 @@ def sajupalja(birth_date_str, birth_hour, birth_minute, is_lunar_str):
             birth_date.year, birth_date.month, birth_date.day
         )
     else:
-        lunar_year, lunar_month, lunar_day, is_leap_month = solar_to_lunar(
-            birth_date.year, birth_date.month, birth_date.day
+        lunar_year, lunar_month, lunar_day, is_leap_month = (
+            birth_date.year,
+            birth_date.month,
+            birth_date.day,
         )
         is_leap_month = False
 
