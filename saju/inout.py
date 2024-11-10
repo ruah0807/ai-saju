@@ -1,4 +1,4 @@
-from calculate import (
+from saju.calculate import (
     solar_to_lunar,
     get_day_pillar,
     get_month_pillar,
@@ -8,24 +8,19 @@ from calculate import (
 from datetime import datetime
 
 
-def sajupalja(birth_date_str, birth_time_str, gender, is_lunar_str):
-    is_lunar = is_lunar_str.upper() == "Y"
+def sajupalja(birth_date_str, birth_hour, birth_minute, is_lunar_str):
+    is_lunar = is_lunar_str == "음력"
     birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
 
-    # "HH:MM" 형식으로부터 시간과 분을 분리
-    birth_hour, birth_minute = map(int, birth_time_str.split(":"))
-
-    if is_lunar:
-        lunar_year, lunar_month, lunar_day = (
-            birth_date.year,
-            birth_date.month,
-            birth_date.day,
+    if not is_lunar:
+        lunar_year, lunar_month, lunar_day, is_leap_month = solar_to_lunar(
+            birth_date.year, birth_date.month, birth_date.day
         )
-        is_leap_month = False
     else:
         lunar_year, lunar_month, lunar_day, is_leap_month = solar_to_lunar(
             birth_date.year, birth_date.month, birth_date.day
         )
+        is_leap_month = False
 
     year_pillar = get_year_pillar(lunar_year)
     year_stem = year_pillar[:4]

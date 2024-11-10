@@ -1,6 +1,6 @@
 from datetime import datetime
 from korean_lunar_calendar import KoreanLunarCalendar
-from data import *
+from saju.data import *
 
 
 def solar_to_lunar(year, month, day):

@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from openai import OpenAI
 from dotenv import load_dotenv
 from init import client
-from calculate.inout import *
+from saju.inout import *
 
 
 
