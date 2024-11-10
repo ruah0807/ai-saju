@@ -1,7 +1,5 @@
 load_dotenv 
 openai 
-fastapi 
-uvicorn 
 streamlit
 korean_lunar_calendar
 pytz
