@@ -1,13 +1,11 @@
 import os, sys
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from korean_lunar_calendar import KoreanLunarCalendar
 from saju.data import *
 
 sixty_ganji = [heavenly_stems[i % 10] + earthly_branches[i % 12] for i in range(60)]
-# 한국 표준시 (UTC+9) 타임존 설정
-KST = timezone(timedelta(hours=9))
 
 
 def solar_to_lunar(year, month, day):
@@ -49,48 +47,82 @@ def get_year_pillar(lunar_year):
     return sixty_ganji[index]
 
 
-def get_month_pillar(year_stem, lunar_month, is_leap_month):
-    """
-    연간 천간을 기반으로 월주를 계산합니다.
+# 절기 정보 및 월주 조견표
+절기_정보 = [
+    (1, "입춘", datetime(2024, 2, 4)),
+    (2, "경칩", datetime(2024, 3, 6)),
+    (3, "청명", datetime(2024, 4, 5)),
+    (4, "입하", datetime(2024, 5, 6)),
+    (5, "망종", datetime(2024, 6, 6)),
+    (6, "소서", datetime(2024, 7, 7)),
+    (7, "입추", datetime(2024, 8, 8)),
+    (8, "백로", datetime(2024, 9, 8)),
+    (9, "한로", datetime(2024, 10, 8)),
+    (10, "입동", datetime(2024, 11, 7)),
+    (11, "대설", datetime(2024, 12, 7)),
+    (12, "소한", datetime(2025, 1, 5)),
+]
 
-    Parameters:
-        year_stem (str): 년간 (천간)
-        lunar_month (int): 음력 월
-        is_leap_month (bool): 윤달 여부
 
-    Returns:
-        str: 월주 (천간 + 지지)
+def get_month_pillar(year_stem, lunar_year, lunar_month):
     """
-    if is_leap_month:
-        # 윤달의 경우 월주를 계산하지 않거나, 전월과 동일하게 처리
-        # 여기서는 전월과 동일하게 처리하는 것으로 가정
+    절기 기준으로 월주를 계산합니다.
+    """
+    # 연간의 천간을 기준으로 월주 찾기
+    if year_stem in month_pillar_table:
+        month_pillar = month_pillar_table[year_stem][lunar_month - 1]
+    else:
+        raise ValueError("월주를 계산할 수 없는 연간입니다.")
+
+    # 절기 기준 날짜 가져오기
+    for month, 절기명, 절입일 in 절기_정보:
+        if month == lunar_month:
+            base_month_date = 절입일
+            break
+    else:
+        raise ValueError("해당 월에 대한 절입일 정보가 없습니다.")
+
+    # 만약 생년월일이 절입일 이전이라면, 이전 달의 월주를 사용
+    birth_date = datetime(lunar_year, base_month_date.month, base_month_date.day)
+    if birth_date < base_month_date:
+        # 이전 달로 이동
         lunar_month -= 1
         if lunar_month == 0:
-            lunar_month = 12
-    month_branch = month_branches[lunar_month - 1]
-    month_stems = month_stems_table[year_stem]
-    month_stem = month_stems[lunar_month - 1]
-    return month_stem + month_branch
+            lunar_month = 12  # 1월보다 이전은 12월로 순환
+        # 이전 달의 월주 찾기
+        month_pillar = month_pillar_table[year_stem][lunar_month - 1]
+        # 이전 달의 절입일 기준일을 가져옴
+        for month, 절기명, 절입일 in 절기_정보:
+            if month == lunar_month:
+                base_month_date = 절입일
+                break
+
+    return month_pillar, base_month_date
 
 
-def get_day_pillar(solar_date):
+def get_day_pillar(target_date, base_date):
     """
-    양력 날짜를 기반으로 일주를 계산합니다.
+    주어진 기준일을 바탕으로 특정 날짜의 일주를 구합니다.
 
     Parameters:
-        solar_date (datetime): 양력 날짜와 시간
+        base_date (datetime): 기준일
+        target_date (datetime): 목표일
 
     Returns:
-        str: 일주 (천간 + 지지)
+        str: 해당 날짜의 일주
     """
-    # 일간지 계산은 복잡하며, 정확한 계산을 위해서는 천문 역법 데이터가 필요합니다.
-    # 여기서는 예시로 통용되는 수식을 사용합니다.
-    # 참고로, 서기 1900년 1월 31일은 병인일입니다.
-    base_date = datetime(1900, 1, 31, tzinfo=KST)  # 병인일을 기준으로 함
-    solar_date = solar_date.astimezone(KST)
-    delta_days = (solar_date - base_date).days
-    index = delta_days % 60
+    # 기준일로부터의 경과 일수를 계산하여 60갑자 주기에 맞춰 일간지를 결정
+    delta_days = (target_date - base_date).days
+    print(f"기준일 (base_date): {base_date}")
+    print(f"대상일 (target_date): {target_date}")
+    print(f"경과 일수 (delta_days): {delta_days}")
+
+    index = delta_days % 60  # 60갑자 순환
+    print(f"갑자 순환 인덱스 (index): {index}")
+
     day_pillar = sixty_ganji[index]
+    print(f"계산된 일주 (day_pillar): {day_pillar}")
+
     return day_pillar
 
 

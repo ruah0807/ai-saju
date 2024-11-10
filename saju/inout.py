@@ -20,6 +20,7 @@ def sajupalja(birth_date_str, birth_hour, birth_minute, is_lunar_str):
         lunar_year, lunar_month, lunar_day, is_leap_month = solar_to_lunar(
             birth_date.year, birth_date.month, birth_date.day
         )
+        birth_date = datetime(lunar_year, lunar_month, lunar_day)
         print(
             f"연도:{lunar_year} / 월:{lunar_month} / 일: {lunar_day} / 윤달인가 : {is_leap_month}"
         )
@@ -35,15 +36,20 @@ def sajupalja(birth_date_str, birth_hour, birth_minute, is_lunar_str):
         )
 
     year_pillar = get_year_pillar(lunar_year)
-    year_stem = year_pillar[:4]
-    month_pillar = get_month_pillar(year_stem, lunar_month, is_leap_month)
-    day_pillar = get_day_pillar(birth_date)
+    year_stem = year_pillar[:1]  # 천간의 첫 글자만 추출
+    print(f"디버그 - year_pillar: {year_pillar}, year_stem: {year_stem}")
+
+    # 월주 및 월주의 기준 날짜 계산
+    month_pillar, base_month_date = get_month_pillar(year_stem, lunar_year, lunar_month)
+    print(f"월주: {month_pillar}, 월 기준일: {base_month_date}")
+
+    day_pillar = get_day_pillar(base_month_date, birth_date)
     day_stem = day_pillar[:4]
 
     # 시주 계산 시 birth_minute도 전달
     time_pillar = get_time_pillar(day_stem, birth_hour, birth_minute)
 
-    result = f"사주팔자: {time_pillar} {day_pillar} {month_pillar} {year_pillar}"
+    result = f"시주 : {time_pillar}, 일주 : {day_pillar}, 월주 : {month_pillar}, 년주 : {year_pillar}"
     print(result)
     return result
 
@@ -56,7 +62,7 @@ def main():
 
     try:
         # birth_hour와 birth_minute 값을 int 형식으로 전달
-        sajupalja("1989-08-7", 10, 17, "양력")
+        sajupalja("1989-08-07", 10, 1, "양력")
     except ValueError as ve:
         print(f"오류: {ve}")
 

@@ -82,10 +82,10 @@ if st.button("사주팔자 세우기"):
             ```
             {{
                 "description" : (지정된 사주팔자 설명)
-                "time_pillar": (시주)
-                "day_pillar": (일주)
-                "month_pillar": (월주)
-                "year_pillar": (년주)
+                "시주": (시주)
+                "일주": (일주)
+                "월주": (월주)
+                "년주": (년주)
             }}
             ```
             
@@ -212,19 +212,19 @@ if st.button("사주팔자 세우기"):
             # 카드 형식으로 사주 구성 출력
             cols = st.columns(4)
             cols[0].markdown(
-                f'<div class="card card-siju"><div class="card-title">시주</div><div class="card-content">{saju_data["time_pillar"]}</div></div>',
+                f'<div class="card card-siju"><div class="card-title">시주</div><div class="card-content">{saju_data["시주"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[1].markdown(
-                f'<div class="card card-ilju"><div class="card-title">일주</div><div class="card-content">{saju_data["day_pillar"]}</div></div>',
+                f'<div class="card card-ilju"><div class="card-title">일주</div><div class="card-content">{saju_data["일주"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[2].markdown(
-                f'<div class="card card-wolju"><div class="card-title">월주</div><div class="card-content">{saju_data["month_pillar"]}</div></div>',
+                f'<div class="card card-wolju"><div class="card-title">월주</div><div class="card-content">{saju_data["월주"]}</div></div>',
                 unsafe_allow_html=True,
             )
             cols[3].markdown(
-                f'<div class="card card-nyunju"><div class="card-title">년주</div><div class="card-content">{saju_data["year_pillar"]}</div></div>',
+                f'<div class="card card-nyunju"><div class="card-title">년주</div><div class="card-content">{saju_data["년주"]}</div></div>',
                 unsafe_allow_html=True,
             )
             print(f"사주팔자 결과:{msg}")
