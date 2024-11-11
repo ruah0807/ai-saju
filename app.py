@@ -117,18 +117,22 @@ if st.button("사주팔자 세우기"):
 
                     # `sajupalja` 함수가 필요한 경우 호출
                     if func_name == "sajupalja":
-                        # 호출부 수정
-                        output = sajupalja(
-                            birth_date_str=kwargs["birth_date_str"],
-                            birth_hour=int(kwargs.get("birth_hour", 0)),  # 기본값 설정
-                            birth_minute=int(
-                                kwargs.get("birth_minute", 0)
-                            ),  # 기본값 설정
-                            is_lunar_str=kwargs["is_lunar_str"],
-                        )
-                        tool_outputs.append(
-                            {"tool_call_id": tool.id, "output": str(output)}
-                        )
+                        try:
+                            # 호출부 수정
+                            output = sajupalja(
+                                birth_date_str=kwargs["birth_date_str"],
+                                birth_hour=int(kwargs.get("birth_hour", 0)),  # 기본값 설정
+                                birth_minute=int(
+                                    kwargs.get("birth_minute", 0)
+                                ),  # 기본값 설정
+                                is_lunar_str=kwargs["is_lunar_str"],
+                            )
+                            tool_outputs.append(
+                                {"tool_call_id": tool.id, "output": str(output)}
+                            )
+                        except ValueError as e :
+                            st.error(f"오류 발생: {str(e)}\n만세력 데이터를 찾을 수 없습니다. 다른 날짜로 시도해 주세요.")
+                            st.stop()
 
                 # 함수 호출 결과 제출
                 run = client.beta.threads.runs.submit_tool_outputs(
