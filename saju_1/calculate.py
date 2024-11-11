@@ -196,28 +196,25 @@ def get_saju_data_from_solar(solar_date: str) -> dict:
 
 
 
-def sajupalja(year: int, month: int, day: int, 
-                  hour: int, minute: int, 
-                  is_solar: bool = True, 
-                  is_leap_month: bool = False) -> list[str]:
+def sajupalja(birth_date_str: str, birth_hour: int, birth_minute: int,  is_lunar_str: str):
+
     """사주 계산 메인 함수"""
-    print(f"\n=== 사주 계산 시작 ===")
-    print(f"입력: {year}년 {month}월 {day}일 {hour}시 {minute}분")
-    print(f"양/음력: {'양력' if is_solar else '음력'}")
-    print(f"윤달여부: {'윤달' if is_leap_month else '평달'}")
-    
-    # 날짜 문자열/정수 생성
-    date_str = f"{year:04d}{month:02d}{day:02d}"
-    birth_time = f"{hour:02d}{minute:02d}"
+
+     # birth_date_str을 이용하여 연, 월, 일을 추출
+    year, month, day = map(int, birth_date_str.split('-'))
+    birth_time = f"{birth_hour:02d}{birth_minute:02d}"
+    is_solar = (is_lunar_str == "양력")
+
     try:
-        # 1. 만세력
+        # 1. 만세력: 양력/음력 확인 및 변환
         if is_solar:
             solar_date = int(f"{year:04d}{month:02d}{day:02d}")
         else:
             # 음력을 양력으로 변환
-            solar_date_str = convert_lunar_to_solar(year, month, day, is_leap_month)
+            solar_date_str = convert_lunar_to_solar(year, month, day, False)  # 윤달 여부 False로 가정
             solar_date = int(solar_date_str)
-            print(f"음력 {year}년 {month}월 {day}일 -> 양력 {solar_date}")
+            print(f"음력 {year}-{month:02d}-{day:02d} -> 양력 {solar_date}")
+
 
         # 양력으로 만세력 데이터 찾기
         manse_data = next((data for data in manse_table if data['no'] == solar_date), None)
@@ -254,7 +251,7 @@ def sajupalja(year: int, month: int, day: int,
         day_pillar = f"{day_stem}{day_branch}"
         
         # 시주 계산
-        hour_branch = get_hour_branch(hour, minute)
+        hour_branch = get_hour_branch(birth_hour, birth_minute)
         hour_stem = hour_stem_mapping[day_stem][hour_branch]
         time_pillar = f"{hour_stem}{hour_branch}"
         

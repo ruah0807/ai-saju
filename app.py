@@ -1,11 +1,11 @@
-import os, sys, time, json
-
+import os, sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import streamlit as st
 from init import client, api_key
-from saju.inout import *
+from saju_1.calculate import *
 from openai_assistant.assistant import *
-
+from datetime import datetime
+import time, json
 ASSISTANT_ID = "asst_9SVHfprMPFZIO70y4iu3cR2f"
 if "openai_api_key" not in st.session_state:
     st.session_state["openai_api_key"] = api_key
@@ -61,7 +61,7 @@ if st.button("사주팔자 세우기"):
         # Run 생성
         run = client.beta.threads.runs.create(
             thread_id=st.session_state["thread_id"],
-            assistant_id="asst_M2Q6MUW39ydBnV8zjr6hj1I7",
+            assistant_id=ASSISTANT_ID,
             top_p=0.9,
             temperature=0.76,
             instructions="""문서를 참고하여 사용자가 입력한 정보에 맞게 코드를 실행하여 계산 후 '천간지지' 한자 8자리를 제공하세요.
