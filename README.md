@@ -57,10 +57,10 @@ pip install -r requirements.txt
 ├── openai_assistant
 │   └── assistant.py    # openai assistant생성
 ├── requirements.txt
-└── saju
-    ├── calculate.py    # 사주팔자 계산 로직
+└── saju_1
+    ├── calculate.py    # 사주팔자 계산 로직 (function calling - 사주팔자 계산 최종 함수 포함)
     ├── data.py         # 데이터
-    └── inout.py        # function calling - 사주팔자 계산 최종 함수
+    └── manse_data.py   # 만세력 데이터 
 ```
 
 ### 사용 방법
