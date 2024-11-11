@@ -15,7 +15,7 @@
 
 ### 배포 주소
 
-[https://ai-saju-hs.streamlit.app/](https://ai-saju-hs.streamlit.app/)
+- [https://ai-saju-hs.streamlit.app/](https://ai-saju-hs.streamlit.app/)
 
 ---
 
@@ -69,4 +69,4 @@ pip install -r requirements.txt
 2.  결과 확인: 결과가 카드 형태로 표시되며, 각 기둥(시주, 일주, 월주, 연주)의 한자와 설명이 나타납니다.
 
 
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/20453633-9508-4dad-9fe9-f3e95b4ffee2)
