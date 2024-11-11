@@ -25,49 +25,50 @@ def get_year_pillar(year: int) -> Tuple[str, str]:
 
     return stem, branch
 
-def get_month_pillar(date_str: str, birth_time: str) -> Tuple[str, str]:
+def get_month_pillar(date: int, birth_time: int) -> dict:
     """
-    월주 계산 (절입시간 고려)
+    주어진 날짜와 출생 시간에 따라 월주의 천간과 지지를 생성합니다.
+
     Args:
-        date_str (str): YYYYMMDD 형식의 날짜
-        birth_time (str): HHMM 형식의 시간
+        date (int): YYYYMMDD 형식의 날짜
+        birth_time (int): HHMM 형식의 출생 시간
+
     Returns:
-        Tuple[str, str]: (천간, 지지)
+        dict: 월주의 천간과 지지
     """
-    # 출생 시간 정수화 (HHMM)
-    birth_time_int = int(birth_time)
+    # 1. 만세력 데이터에서 해당 날짜의 데이터를 찾음
+    current_month_data = next((entry for entry in manse_table if entry['no'] == date), None)
     
-    # 해당 날짜의 만세력 데이터를 찾고 절입 시간 비교
-    current_data = next((data for data in manseTable if str(data['no']) == date_str), None)
-    if not current_data:
-        raise ValueError(f"Date not found in manseTable: {date_str}")
-
-    # 현재 날짜의 절입 시간 확인
-    jeolip_time = current_data['jeolip']
+    if not current_month_data:
+        raise ValueError("해당 날짜의 월주 데이터를 찾을 수 없습니다.")
     
-    # 절입 시간 이후인지 확인
-    if birth_time_int >= jeolip_time:
-        # 절입 시간 이후, 현재 월의 월주 사용
-        month_h = current_data['month_h']
-        month_e = current_data['month_e']
+    # 2. 절입 시간 비교하여 월주 결정
+    if birth_time >= current_month_data['jeolip']:
+        # 절입 이후면 현재 달의 천간과 지지를 사용
+        month_h = current_month_data['month_h']
+        month_e = current_month_data['month_e']
     else:
-        # 절입 시간 이전, 이전 월의 월주 사용
-        current_idx = manseTable.index(current_data)
-        
-        if current_idx > 0:  # 이전 데이터가 있는 경우
-            prev_data = manseTable[current_idx - 1]
-            month_h = prev_data['month_h']
-            month_e = prev_data['month_e']
+        # 절입 이전이면 이전 달의 천간과 지지를 사용
+        current_index = manse_table.index(current_month_data)
+        if current_index > 0:
+            previous_month_data = manse_table[current_index - 1]
+            month_h = previous_month_data['month_h']
+            month_e = previous_month_data['month_e']
         else:
-            # 이전 데이터가 없는 경우 현재 월의 월주 사용 (예외 케이스)
-            month_h = current_data['month_h']
-            month_e = current_data['month_e']
+            raise ValueError("이전 달 데이터가 없습니다.")
 
-    # 천간과 지지 변환
-    stem = heavenly_map[month_h]
-    branch = earthly_map[month_e] if isinstance(month_e, int) else earthly_map[int(month_e)]
+    # 3. 천간 및 지지 매핑
+    heavenly_stem = heavenly_map.get(month_h, "오류")
+    earthly_branch = earthly_map.get(month_e, "오류")
     
-    return stem, branch
+    return {"천간": heavenly_stem, "지지": earthly_branch}
+
+# 사용 예시
+try:
+    month_pillar = get_month_pillar(20230106, 800)
+    print(f"월주 천간: {month_pillar['천간']}, 월주 지지: {month_pillar['지지']}")
+except ValueError as e:
+    print(e)
 
             
 
@@ -78,8 +79,8 @@ def get_day_pillar(date_str: str) -> Tuple[str, str]:
     Returns:
         Tuple[str, str]: (천간, 지지)
     """
-    # manseTable에서 해당 날짜 데이터 찾기
-    for data in manseTable:
+    # manse_table에서 해당 날짜 데이터 찾기
+    for data in manse_table:
         if str(data['no']) == date_str:
             day_h = data['day_h']
             day_e = data['day_e']
@@ -90,7 +91,7 @@ def get_day_pillar(date_str: str) -> Tuple[str, str]:
             
             return stem, branch
             
-    raise ValueError(f"Date not found in manseTable: {date_str}")
+    raise ValueError(f"Date not found in manse_table: {date_str}")
 
 def get_hour_pillar(hour: int, minute: int, day_stem: str) -> Tuple[str, str]:
     """시주 계산
@@ -130,13 +131,13 @@ def get_lunar_date(solar_date: str) -> Dict:
     """
     solar_int = int(solar_date)
     
-    # manseTable에서 해당하는 양력 날짜 찾기
-    for data in manseTable:
+    # manse_table에서 해당하는 양력 날짜 찾기
+    for data in manse_table:
         if data['no'] == solar_int:
             print(f'양력 data :{data}')
             return data
             
-    raise ValueError(f"Date not found in manseTable: {solar_date}")
+    raise ValueError(f"Date not found in manse_table: {solar_date}")
 
 
 
@@ -155,18 +156,18 @@ def convert_lunar_to_solar(year: int, month: int, day: int, is_leap_month: bool)
 
 def get_saju_data_from_solar(solar_date: str) -> dict:
     """만세력 데이터에서 양력 날짜를 기준으로 연주, 월주, 일주, 시주 데이터를 검색합니다."""
-    first_date = manseTable[0]['no']
-    last_date = manseTable[-1]['no']
+    first_date = manse_table[0]['no']
+    last_date = manse_table[-1]['no']
     print(f"만세력 데이터 범위: {first_date} ~ {last_date}")
     
     # 정확히 일치하는 날짜 검색
-    for data in manseTable:
+    for data in manse_table:
         if data['no'] == int(solar_date):
             return data
     
     # 일치하는 날짜가 없을 경우 가장 가까운 이전 날짜 찾기
     closest_data = None
-    for data in reversed(manseTable):  # 최신 날짜부터 거꾸로 검색
+    for data in reversed(manse_table):  # 최신 날짜부터 거꾸로 검색
         if data['no'] < int(solar_date):
             closest_data = data
             break
@@ -195,7 +196,7 @@ def get_saju_data_from_solar(solar_date: str) -> dict:
 
 
 
-def calculate_saju(year: int, month: int, day: int, 
+def sajupalja(year: int, month: int, day: int, 
                   hour: int, minute: int, 
                   is_solar: bool = True, 
                   is_leap_month: bool = False) -> list[str]:
@@ -209,26 +210,27 @@ def calculate_saju(year: int, month: int, day: int,
     date_str = f"{year:04d}{month:02d}{day:02d}"
     birth_time = f"{hour:02d}{minute:02d}"
     try:
+        # 1. 만세력
         if is_solar:
-            # 양력으로 받은 경우
             solar_date = int(f"{year:04d}{month:02d}{day:02d}")
-            manse_data = None
-            for data in manseTable:
-                if data['no'] == solar_date:
-                    manse_data = data
-                    break
-            if not manse_data:
-                raise ValueError(f"Solar date not found: {solar_date}")
         else:
-            print(f"\n음력 날짜 검색 시작")
-            solar_date = convert_lunar_to_solar(year, month, day, is_leap_month)
-            manse_data = get_saju_data_from_solar(solar_date)
-            print("변환된 만세력 데이터:", manse_data)
+            # 음력을 양력으로 변환
+            solar_date_str = convert_lunar_to_solar(year, month, day, is_leap_month)
+            solar_date = int(solar_date_str)
+            print(f"음력 {year}년 {month}월 {day}일 -> 양력 {solar_date}")
+
+        # 양력으로 만세력 데이터 찾기
+        manse_data = next((data for data in manse_table if data['no'] == solar_date), None)
+        if not manse_data:
+            raise ValueError("해당 날짜의 만세력 데이터를 찾을 수 없습니다.")
 
 
         # 2. 각 주 계산
         year_stem = heavenly_map[manse_data['year_h']]
         year_branch = earthly_map[int(manse_data['year_e'])]
+        year_pillar = f"{year_stem}{year_branch}"
+
+
         
         # 월주 계산 (절입시간 고려)
         if int(birth_time) >= int(manse_data['jeolip']):
@@ -236,26 +238,29 @@ def calculate_saju(year: int, month: int, day: int,
             month_branch = earthly_map[manse_data['month_e']]
         else:
             # 이전 데이터 찾기
-            idx = manseTable.index(manse_data)
+            idx = manse_table.index(manse_data)
             if idx > 0:
-                prev_data = manseTable[idx - 1]
+                prev_data = manse_table[idx - 1]
                 month_stem = heavenly_map[prev_data['month_h']]
                 month_branch = earthly_map[prev_data['month_e']]
             else:
                 month_stem = heavenly_map[manse_data['month_h']]
                 month_branch = earthly_map[manse_data['month_e']]
-        
+        month_pillar = f"{month_stem}{month_branch}"
+
         # 일주 계산
         day_stem = heavenly_map[manse_data['day_h']]
         day_branch = earthly_map[int(manse_data['day_e'])]
+        day_pillar = f"{day_stem}{day_branch}"
         
         # 시주 계산
         hour_branch = get_hour_branch(hour, minute)
         hour_stem = hour_stem_mapping[day_stem][hour_branch]
+        time_pillar = f"{hour_stem}{hour_branch}"
         
-        return [hour_stem, hour_branch, day_stem, day_branch,
-                month_stem, month_branch, year_stem, year_branch]
-                
+        # 결과 조합
+        result = f"시주: {time_pillar}, 일주: {day_pillar}, 월주: {month_pillar}, 연주: {year_pillar}"
+        return result
     except (KeyError, ValueError) as e:
         raise ValueError(f"Error calculating Saju: {e}")
     
@@ -280,7 +285,7 @@ def print_lunar_dates_around(year: int, month: int):
     
     target = int(f"{year}{month:02d}00")  # 해당 월의 시작점
     
-    for data in manseTable:
+    for data in manse_table:
         umdate = data['umdate']
         if target - 100 <= umdate <= target + 100:  # 전후 1개월
             print(f"음력: {data['umdate']}, "
@@ -290,10 +295,10 @@ def print_lunar_dates_around(year: int, month: int):
 
 def main():
     print("\n=== 만세력 데이터 정보 ===")
-    print(f"전체 데이터 수: {len(manseTable)}")
+    print(f"전체 데이터 수: {len(manse_table)}")
     print("\n만세력 데이터 범위:")
-    print(f"양력: {manseTable[0]['no']} ~ {manseTable[-1]['no']}")
-    print(f"음력: {manseTable[0]['umdate']} ~ {manseTable[-1]['umdate']}")
+    print(f"양력: {manse_table[0]['no']} ~ {manse_table[-1]['no']}")
+    print(f"음력: {manse_table[0]['umdate']} ~ {manse_table[-1]['umdate']}")
     
     # 2023년 11월 주변 데이터 출력
     print_lunar_dates_around(2023, 11)
@@ -308,16 +313,16 @@ def main():
         },
         # 음력 테스트
         {
-            "year": 1960, "month": 3, "day": 26,
-            "hour": 0, "minute": 0,
-            "is_solar": False
+            "year": 1997, "month": 3, "day": 31,
+            "hour": 0, "minute": 20,
+            "is_solar": True
         }
     ]
     
     for case in test_cases:
         try:
             print(f"\n테스트 케이스: {case}")
-            result = calculate_saju(**case)
+            result = sajupalja(**case)
             print("사주팔자: " + "".join(result))
         except ValueError as e:
             print(f"에러 발생: {e}")

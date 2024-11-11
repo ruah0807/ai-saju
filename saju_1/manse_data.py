@@ -1,4 +1,4 @@
-manseTable = [
+manse_table = [
   {
     "number": 5,
     "no": 19291108,
