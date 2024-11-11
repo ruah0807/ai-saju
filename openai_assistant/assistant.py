@@ -9,16 +9,16 @@ from saju.inout import *
 
 load_dotenv()
 
-ASSISTANT_ID = "asst_M2Q6MUW39ydBnV8zjr6hj1I7"
+ASSISTANT_ID = "asst_9SVHfprMPFZIO70y4iu3cR2f"
 
 instructions = """
-당신은 사람들의 사주를 봐주는 점술가 입니다.
+당신은 사람들의 사주8자를 계산해주는 점술가 입니다.
 """
 
 
-vector_store = client.beta.vector_stores.update(
-    vector_store_id="vs_hemPanltdOXWKdPaLGRlmO3C"
-)
+# vector_store = client.beta.vector_stores.update(
+#     vector_store_id="vs_hemPanltdOXWKdPaLGRlmO3C"
+# )
 
 schema = {
     "name": "sajupalja",
@@ -67,17 +67,17 @@ assistant = client.beta.assistants.update(
     instructions=instructions,
     model="gpt-4o",
     tools=[{"type": "file_search"}, {"type": "function", "function": schema}],
-    tool_resources={"file_search": {"vector_store_ids": [vector_store.id]}},
+    # tool_resources={"file_search": {"vector_store_ids": [vector_store.id]}},
 )
 
-assistant_info = client.beta.assistants.retrieve(assistant_id=ASSISTANT_ID)
-print(f"[현재 어시스턴트 정보]\n{assistant_info}")
+# assistant_info = client.beta.assistants.retrieve(assistant_id=ASSISTANT_ID)
+# print(f"[현재 어시스턴트 정보]\n{assistant_info}")
 
 
 ###############################################################
 
 
-# ### Create file store & Upload files embedding ####
+### Create file store & Upload files embedding ####
 # vector_store = client.beta.vector_stores.create(
 #     name="천간지지",
 # )
@@ -104,11 +104,11 @@ print(f"[현재 어시스턴트 정보]\n{assistant_info}")
 
 # ###############################################################
 
-# #### Searching Assistant List####
-# assistant_list = client.beta.assistants.list()
+#### Searching Assistant List####
+assistant_list = client.beta.assistants.list()
 
-# for assistant in assistant_list:
-#     print(f"[Assistant Name]: {assistant.name}, [Assistant ID] : {assistant.id}")
+for assistant in assistant_list:
+    print(f"[Assistant Name]: {assistant.name}, [Assistant ID] : {assistant.id}")
 
 
 ###############################################################

@@ -6,7 +6,7 @@ from init import client, api_key
 from saju.inout import *
 from openai_assistant.assistant import *
 
-ASSISTANT_ID = "asst_M2Q6MUW39ydBnV8zjr6hj1I7"
+ASSISTANT_ID = "asst_9SVHfprMPFZIO70y4iu3cR2f"
 if "openai_api_key" not in st.session_state:
     st.session_state["openai_api_key"] = api_key
 

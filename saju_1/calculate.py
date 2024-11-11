@@ -26,37 +26,50 @@ def get_year_pillar(year: int) -> Tuple[str, str]:
     return stem, branch
 
 def get_month_pillar(date_str: str, birth_time: str) -> Tuple[str, str]:
-    """월주 계산 (절입시간 고려)
+    """
+    월주 계산 (절입시간 고려)
     Args:
         date_str (str): YYYYMMDD 형식의 날짜
         birth_time (str): HHMM 형식의 시간
     Returns:
         Tuple[str, str]: (천간, 지지)
     """
-    # manseTable에서 해당 날짜 데이터 찾기
-    for data in manseTable:
-        if str(data['no']) == date_str:
-            # 절입시간과 비교
-            if int(birth_time) >= int(data['jeolip']):
-                month_h = data['month_h']
-                month_e = data['month_e']
-            else:
-                # 이전 데이터의 월주 사용
-                prev_idx = manseTable.index(data) - 1
-                if prev_idx >= 0:
-                    month_h = manseTable[prev_idx]['month_h']
-                    month_e = manseTable[prev_idx]['month_e']
-                else:
-                    month_h = data['month_h']
-                    month_e = data['month_e']
-                    
-            # 천간과 지지로 변환
-            stem = heavenly_map[month_h]
-            branch = earthly_map[month_e] if isinstance(month_e, int) else earthly_map[int(month_e)]
+    # 출생 시간 정수화 (HHMM)
+    birth_time_int = int(birth_time)
+    
+    # 해당 날짜의 만세력 데이터를 찾고 절입 시간 비교
+    current_data = next((data for data in manseTable if str(data['no']) == date_str), None)
+    if not current_data:
+        raise ValueError(f"Date not found in manseTable: {date_str}")
+
+    # 현재 날짜의 절입 시간 확인
+    jeolip_time = current_data['jeolip']
+    
+    # 절입 시간 이후인지 확인
+    if birth_time_int >= jeolip_time:
+        # 절입 시간 이후, 현재 월의 월주 사용
+        month_h = current_data['month_h']
+        month_e = current_data['month_e']
+    else:
+        # 절입 시간 이전, 이전 월의 월주 사용
+        current_idx = manseTable.index(current_data)
+        
+        if current_idx > 0:  # 이전 데이터가 있는 경우
+            prev_data = manseTable[current_idx - 1]
+            month_h = prev_data['month_h']
+            month_e = prev_data['month_e']
+        else:
+            # 이전 데이터가 없는 경우 현재 월의 월주 사용 (예외 케이스)
+            month_h = current_data['month_h']
+            month_e = current_data['month_e']
+
+    # 천간과 지지 변환
+    stem = heavenly_map[month_h]
+    branch = earthly_map[month_e] if isinstance(month_e, int) else earthly_map[int(month_e)]
+    
+    return stem, branch
+
             
-            return stem, branch
-            
-    raise ValueError(f"Date not found in manseTable: {date_str}")
 
 def get_day_pillar(date_str: str) -> Tuple[str, str]:
     """일주 계산
@@ -127,6 +140,18 @@ def get_lunar_date(solar_date: str) -> Dict:
 
 
 
+from korean_lunar_calendar import KoreanLunarCalendar
+
+
+def convert_lunar_to_solar(year: int, month: int, day: int, is_leap_month: bool) -> str:
+    """음력을 양력으로 변환하고, yyyyMMdd 형식의 문자열로 반환합니다."""
+    calendar = KoreanLunarCalendar()
+    calendar.setLunarDate(year, month, day, is_leap_month)
+    solar_year = calendar.solarYear
+    solar_month = calendar.solarMonth
+    solar_day = calendar.solarDay
+    return f"{solar_year:04d}{solar_month:02d}{solar_day:02d}"
+
 
 def get_saju_data_from_solar(solar_date: str) -> dict:
     """만세력 데이터에서 양력 날짜를 기준으로 연주, 월주, 일주, 시주 데이터를 검색합니다."""
@@ -153,6 +178,20 @@ def get_saju_data_from_solar(solar_date: str) -> dict:
     # 범위 내에서도 찾을 수 없는 경우
     raise ValueError(f"만세력 데이터에서 {solar_date}을(를) 찾을 수 없습니다. "
                      f"데이터 범위는 {first_date}부터 {last_date}까지입니다.")
+
+
+# # 사용 예제
+# lunar_year = 1960
+# lunar_month = 3
+# lunar_day = 26
+# is_leap_month = False
+
+# # 1. 음력을 양력으로 변환
+# solar_date = convert_lunar_to_solar(lunar_year, lunar_month, lunar_day, is_leap_month)
+
+# # 2. 변환된 양력 날짜를 만세력 데이터에서 찾기
+# saju_data = get_saju_data_from_solar(solar_date)
+# print("변환된 만세력 데이터:", saju_data)
 
 
 
