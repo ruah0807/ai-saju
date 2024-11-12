@@ -6,5 +6,4 @@ pytz
 pandas
 sqlalchemy
 pymysql
-mys
-ql-connector-python
+mysql-connector-python
