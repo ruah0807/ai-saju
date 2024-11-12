@@ -1,11 +1,13 @@
 import os, sys
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import streamlit as st
 from init import client, api_key
-from saju_1.calculate import *
+from saju_1.calculate_1 import *
 from openai_assistant.assistant import *
 from datetime import datetime
 import time, json
+
 ASSISTANT_ID = "asst_9SVHfprMPFZIO70y4iu3cR2f"
 if "openai_api_key" not in st.session_state:
     st.session_state["openai_api_key"] = api_key
@@ -121,7 +123,9 @@ if st.button("사주팔자 세우기"):
                             # 호출부 수정
                             output = sajupalja(
                                 birth_date_str=kwargs["birth_date_str"],
-                                birth_hour=int(kwargs.get("birth_hour", 0)),  # 기본값 설정
+                                birth_hour=int(
+                                    kwargs.get("birth_hour", 0)
+                                ),  # 기본값 설정
                                 birth_minute=int(
                                     kwargs.get("birth_minute", 0)
                                 ),  # 기본값 설정
@@ -130,8 +134,10 @@ if st.button("사주팔자 세우기"):
                             tool_outputs.append(
                                 {"tool_call_id": tool.id, "output": str(output)}
                             )
-                        except ValueError as e :
-                            st.error(f"오류 발생: {str(e)}\n만세력 데이터를 찾을 수 없습니다. 다른 날짜로 시도해 주세요.")
+                        except ValueError as e:
+                            st.error(
+                                f"오류 발생: {str(e)}\n만세력 데이터를 찾을 수 없습니다. 다른 날짜로 시도해 주세요."
+                            )
                             st.stop()
 
                 # 함수 호출 결과 제출

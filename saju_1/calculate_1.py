@@ -9,13 +9,9 @@ from saju_1.data import *
 from init import get_db
 
 
-def get_saju_data(
-    db: Generator[Session, None, None],
-    birth_date: str,
-    birth_hour: int,
-    birth_minute: int,
-    is_lunar: bool,
-) -> Dict:
+def sajupalja(
+    birth_date_str: str, birth_hour: int, birth_minute: int, is_lunar_str: str
+) -> str:
     """
     사주팔자 계산 메인 함수
 
@@ -34,15 +30,20 @@ def get_saju_data(
     """
     try:
         # DB 세션 얻기
-        db_session = next(db)
+        db_session = next(get_db())
+
+        # 음력/양력 변환
+        is_lunar = is_lunar_str == "음력"
 
         # 날짜 검증 및 변환
         try:
-            date_obj = datetime.strptime(birth_date, "%Y-%m-%d")
+            date_obj = datetime.strptime(birth_date_str, "%Y-%m-%d")
+            if date_obj.strftime("%Y-%m-%d 00:00:00"):
+                formatted_date = date_obj.strftime("%Y-%m-%d 00:00:00")
+            else:
+                formatted_date = date_obj.strftime("%Y-%m-%d")
         except ValueError:
             raise ValueError("올바른 날짜 형식이 아닙니다 (YYYY-MM-DD)")
-
-        formatted_date = date_obj.strftime("%Y-%m-%d 00:00:00")
 
         # 시간 검증
         if not (0 <= birth_hour <= 23 and 0 <= birth_minute <= 59):
@@ -65,20 +66,16 @@ def get_saju_data(
 
         # 간지 정보 파싱
         ganji = result.lunaGanJi if is_lunar else result.solarGanJi
-        # 년월일로 분리하고 각각 앞의 두 글자만 추출
-        year_ganji = ganji.split("年")[0]
-        month_ganji = ganji.split("月")[0].split("年")[1].strip()
-        day_ganji = ganji.split("日")[0].split("月")[1].strip()
+        year_pillar = ganji.split("年")[0]
+        month_pillar = ganji.split("月")[0].split("年")[1].strip()
+        day_pillar = ganji.split("日")[0].split("月")[1].strip()
 
         # 시주 계산
-        time_ganji = get_time_pillar(birth_hour, birth_minute, day_ganji[0])
+        time_pillar = get_time_pillar(birth_hour, birth_minute, day_pillar[0])
 
-        return {
-            "year_ganji": year_ganji,
-            "month_ganji": month_ganji,
-            "day_ganji": day_ganji,
-            "time_ganji": time_ganji,
-        }
+        # 결과 조합
+        result = f"시주: {time_pillar}, 일주: {day_pillar}, 월주: {month_pillar}, 연주: {year_pillar}"
+        return result
 
     except Exception as e:
         raise ValueError(f"사주 계산 중 오류 발생: {str(e)}")
@@ -114,17 +111,13 @@ def get_time_pillar(hour: int, minute: int, day_stem: str) -> str:
 
 if __name__ == "__main__":
     try:
-        result = get_saju_data(
-            db=get_db(),
-            birth_date="1989-08-07",
+        result = sajupalja(
+            birth_date_str="1989-08-07",
             birth_hour=10,
             birth_minute=17,
-            is_lunar=False,
+            is_lunar_str="양력",
         )
 
-        print("사주팔자 결과:")
-        for key, value in result.items():
-            print(f"{key}: {value}")
-
+        print(result)
     except ValueError as e:
         print(f"오류: {e}")
