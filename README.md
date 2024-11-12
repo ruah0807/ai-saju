@@ -15,7 +15,7 @@
 
 ### 배포 주소
 
-- [https://ai-saju-hs.streamlit.app/](https://ai-saju-hs.streamlit.app/)
+*   [https://ai-saju-hs.streamlit.app/](https://ai-saju-hs.streamlit.app/)
 
 ---
 
@@ -67,6 +67,5 @@ pip install -r requirements.txt
 
 1.  생년월일과 시간 입력: 생년월일을 달력에서 선택하고, 태어난 시간과 분을 입력합니다.
 2.  결과 확인: 결과가 카드 형태로 표시되며, 각 기둥(시주, 일주, 월주, 연주)의 한자와 설명이 나타납니다.
-
 
 ![image](https://github.com/user-attachments/assets/20453633-9508-4dad-9fe9-f3e95b4ffee2)

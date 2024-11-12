@@ -3,3 +3,8 @@ openai
 streamlit
 korean_lunar_calendar
 pytz
+pandas
+sqlalchemy
+pymysql
+mys
+ql-connector-python

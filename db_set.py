@@ -1,17 +1,11 @@
 import os
-from openai import OpenAI
-from dotenv import load_dotenv
-import streamlit as st
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+from sqlalchemy import (
+    create_engine,
+)
 
-load_dotenv()
-
-api_key = os.environ.get("OPENAI_API_KEY")
-# api_key = st.secrets["OPENAI_API_KEY"]
-# Open ai API를 사용하기 위한 클라이언트 객체생성
-client = OpenAI(api_key=api_key)
+# from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from dotenv import load_dotenv
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -30,3 +24,5 @@ def get_db():
 
 
 get_db()
+# Base.metadata.drop_all(bind=engine)
+# Base.metadata.create_all(bind=engine)

@@ -13,3 +13,5 @@ __pycache__/
 
 # 기타 개인 설정 파일
 .DS_Store
+
+.docs
