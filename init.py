@@ -13,9 +13,6 @@ api_key = os.environ.get("OPENAI_API_KEY")
 # Open ai API를 사용하기 위한 클라이언트 객체생성
 client = OpenAI(api_key=api_key)
 
-# .env 파일에서 환경 변수 로드
-load_dotenv()
-
 # 한국 시간대 설정
 engine = create_engine(os.getenv("MYSQL_DATABASE_URL"))
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -27,6 +24,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-get_db()

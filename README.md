@@ -32,8 +32,9 @@ pip install -r requirements.txt
 
 시스템 환경
 
-*   운영체제: macOS Sequoia 15.1
+*   운영체제: macOS
 *   Python 버전: Python 3.12
+*   DataBase : Mysql, AWS RDS
 
 사용스택 및 라이브러리
 
