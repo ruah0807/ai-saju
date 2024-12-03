@@ -13,12 +13,6 @@
 
 ---
 
-### 배포 주소
-
-*   [https://ai-saju-hs.streamlit.app/](https://ai-saju-hs.streamlit.app/)
-
----
-
 ## 실행하기
 
 ```
